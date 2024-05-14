@@ -1,0 +1,1 @@
+# Granting permissions for Amazon S3

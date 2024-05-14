@@ -1,0 +1,1 @@
+# Amazon EC2 read AWS Systems Manager Parameter Store
