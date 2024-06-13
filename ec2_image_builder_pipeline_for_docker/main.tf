@@ -125,7 +125,8 @@ resource "aws_iam_instance_profile" "example" {
 }
 
 resource "aws_ecr_repository" "example" {
-  name = "ec2-image-builder-docker-${random_string.suffix.result}"
+  name         = "ec2-image-builder-docker-${random_string.suffix.result}"
+  force_delete = true
 }
 
 resource "aws_cloudwatch_log_group" "example" {
@@ -147,12 +148,50 @@ data "aws_ami" "amzn2_ecs" {
   }
 }
 
+resource "aws_imagebuilder_component" "install_go_latest" {
+  name        = "install-go-latest"
+  description = "Installs the latest version of Go"
+  platform    = "Linux"
+  version     = "1.0.0"
+
+  data = <<EOF
+name: Install Go latest
+description: Install the latest version of Go Programming Language
+schemaVersion: 1.0
+
+phases:
+  - name: build
+    steps:
+      - name: InstallGoBinary
+        action: ExecuteBash
+        inputs:
+          commands:
+            - yum install -y golang
+
+      - name: CheckGoVersion
+        action: ExecuteBash
+        inputs:
+          commands:
+            - which go
+            - /usr/bin/go version
+            - /usr/bin/go env
+EOF
+}
+
 resource "aws_imagebuilder_container_recipe" "ecs" {
   name    = "ecs-${random_string.suffix.result}"
   version = "1.0.0"
 
   component {
     component_arn = "arn:aws:imagebuilder:${data.aws_region.current.name}:aws:component/update-linux/x.x.x"
+  }
+
+  # component {
+  #   component_arn = "arn:aws:imagebuilder:${data.aws_region.current.name}:aws:component/go-linux/x.x.x"
+  # }
+
+  component {
+    component_arn = aws_imagebuilder_component.install_go_latest.arn
   }
 
   container_type           = "DOCKER"
