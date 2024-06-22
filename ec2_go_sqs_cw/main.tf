@@ -8,7 +8,7 @@ resource "aws_vpc" "example" {
   cidr_block = "10.0.0.0/16"
 
   tags = {
-    Name = "ec2-iam-go-${random_string.suffix.result}"
+    Name = "ec2-go-sqs-cw-${random_string.suffix.result}"
   }
 }
 
@@ -31,7 +31,7 @@ resource "aws_subnet" "public" {
 }
 
 resource "aws_security_group" "example" {
-  name   = "ec2-iam-go-${random_string.suffix.result}"
+  name   = "ec2-go-sqs-cw-${random_string.suffix.result}"
   vpc_id = aws_vpc.example.id
 
   ingress {
@@ -58,7 +58,7 @@ resource "aws_security_group" "example" {
   }
 
   tags = {
-    Name = "ec2-iam-go-${random_string.suffix.result}"
+    Name = "ec2-go-sqs-cw-${random_string.suffix.result}"
   }
 }
 
@@ -66,7 +66,7 @@ resource "aws_internet_gateway" "example" {
   vpc_id = aws_vpc.example.id
 
   tags = {
-    Name = "ec2-iam-go-${random_string.suffix.result}"
+    Name = "ec2-go-sqs-cw-${random_string.suffix.result}"
   }
 }
 
@@ -74,7 +74,7 @@ resource "aws_eip" "nat" {
   domain = "vpc"
 
   tags = {
-    Name = "ec2-iam-go-${random_string.suffix.result}"
+    Name = "ec2-go-sqs-cw-${random_string.suffix.result}"
   }
 }
 
@@ -83,7 +83,7 @@ resource "aws_nat_gateway" "example" {
   subnet_id     = aws_subnet.public.id
 
   tags = {
-    Name = "ec2-iam-go-${random_string.suffix.result}"
+    Name = "ec2-go-sqs-cw-${random_string.suffix.result}"
   }
 
   depends_on = [
@@ -131,12 +131,12 @@ resource "aws_ec2_instance_connect_endpoint" "example" {
   subnet_id = aws_subnet.public.id
 
   tags = {
-    Name = "ec2-iam-go-${random_string.suffix.result}"
+    Name = "ec2-go-sqs-cw-${random_string.suffix.result}"
   }
 }
 
 resource "aws_cloudwatch_log_group" "example" {
-  name              = "/aws/sqs-go/ec2-iam-go-${random_string.suffix.result}"
+  name              = "/aws/sqs-go/ec2-go-sqs-cw-${random_string.suffix.result}"
   retention_in_days = 1
 
   lifecycle {
@@ -145,7 +145,7 @@ resource "aws_cloudwatch_log_group" "example" {
 }
 
 resource "aws_s3_bucket" "example" {
-  bucket        = "ec2-iam-go-${random_string.suffix.result}"
+  bucket        = "ec2-go-sqs-cw-${random_string.suffix.result}"
   force_destroy = true
 }
 
@@ -176,7 +176,7 @@ resource "aws_s3_bucket_ownership_controls" "example" {
 }
 
 resource "aws_sqs_queue" "example" {
-  name                      = "ec2-iam-go-${random_string.suffix.result}"
+  name                      = "ec2-go-sqs-cw-${random_string.suffix.result}"
   delay_seconds             = 60
   max_message_size          = 262144
   message_retention_seconds = 345600
@@ -206,7 +206,7 @@ resource "aws_sqs_queue_policy" "example" {
 }
 
 resource "aws_iam_role" "ec2" {
-  name               = "ec2-iam-go-${random_string.suffix.result}"
+  name               = "ec2-go-sqs-cw-${random_string.suffix.result}"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -263,7 +263,7 @@ resource "aws_iam_role_policy" "cw_loggroup_create_write" {
           "logs:DescribeLogStreams",
           "logs:PutLogEvents"
         ],
-        Resource = "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/sqs-go/ec2-iam-go-${random_string.suffix.result}:*"
+        Resource = "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/sqs-go/ec2-go-sqs-cw-${random_string.suffix.result}:*"
       }
     ]
   })
@@ -296,7 +296,7 @@ resource "aws_iam_role_policy" "s3_read" {
 
 
 resource "aws_iam_instance_profile" "ec2_s3" {
-  name = "ec2-iam-go-${random_string.suffix.result}"
+  name = "ec2-go-sqs-cw-${random_string.suffix.result}"
   role = aws_iam_role.ec2.name
 }
 
@@ -391,6 +391,6 @@ resource "aws_instance" "example" {
   ]
 
   tags = {
-    Name = "ec2-iam-go-${random_string.suffix.result}"
+    Name = "ec2-go-sqs-cw-${random_string.suffix.result}"
   }
 }
